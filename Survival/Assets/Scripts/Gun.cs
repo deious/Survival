@@ -93,6 +93,14 @@ public class Gun : MonoBehaviour
 
     IEnumerator ShotEffect(Vector3 hitPosition)
     {
+        muzzleFlashEffect.Play();
+
+        shellEjectEffect.Play();
+
+        gunAudioPlayer.PlayOneShot(shotClip);
+
+        bulletLineRenderer.SetPosition(0, fireTransform.position);
+        bulletLineRenderer.SetPosition(1, hitPosition);
         bulletLineRenderer.enabled = true;
 
         yield return new WaitForSeconds(0.03f);
@@ -102,14 +110,31 @@ public class Gun : MonoBehaviour
 
     public bool Reload()
     {
-        return false;
+        if(state == State.Reloading || ammoRemain <= 0 || magAmmo >= magCapacity)
+        {
+            return false;
+        }
+
+        StartCoroutine(ReloadRoutine());
+        return true;
     }
 
     IEnumerator ReloadRoutine()
     {
         state = State.Reloading;
+        gunAudioPlayer.PlayOneShot(reloadClip);
 
         yield return new WaitForSeconds(reloadTime);
+
+        int ammoToFill = magCapacity - magAmmo;
+
+        if(ammoRemain < ammoToFill)
+        {
+            ammoToFill = ammoRemain;
+        }
+
+        magAmmo += ammoToFill;
+        ammoRemain -= ammoToFill;
 
         state = State.Ready;
     }
