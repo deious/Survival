@@ -30,6 +30,23 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
+        if(playerInput.fire)
+        {
+            gun.Fire();
+        }
+        else if(playerInput.reload)
+        {
+            if(gun.Reload())
+            {
+                playerAnimator.SetTrigger("Reload");
+            }
+        }
 
+        UpdateUI();
+    }
+
+    void UpdateUI()
+    {
+        
     }
 }
